@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nega Hack v9</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #ff3366;
+    --pink-glow: #ff336688;
+    --pink-dim: #c41f48;
+    --bg: #0a0005;
+    --surface: #110008;
+    --text: #f0d0d8;
+    --muted: #7a4a55;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    background: linear-gradient(to bottom, rgba(10,0,5,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .nav-links { display: flex; gap: 36px; }
+
+  .nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    transition: color 0.2s, opacity 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0; right: 0;
+    height: 1px;
+    background: var(--pink);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--pink); opacity: 1; }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-actions { display: flex; gap: 12px; }
+
+  .btn-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-discord {
+    background: #2f2940;
+    border: 1px solid #5865f2;
+    color: #a0aaf7;
+  }
+  .btn-discord:hover { background: #3d3654; border-color: #7983f7; }
+
+  .btn-download-nav {
+    background: var(--pink-dim);
+    border: 1px solid var(--pink);
+    color: #fff;
+  }
+  .btn-download-nav:hover { background: var(--pink); box-shadow: 0 0 16px var(--pink-glow); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+
+  /* Radial glow behind title */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(255,51,102,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    color: var(--pink);
+    text-shadow:
+      0 0 20px rgba(255,51,102,0.8),
+      0 0 60px rgba(255,51,102,0.4),
+      0 0 120px rgba(255,51,102,0.2);
+    letter-spacing: 0.02em;
+    animation: flicker 6s infinite;
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.85; }
+    97% { opacity: 1; }
+    98% { opacity: 0.9; }
+    99% { opacity: 1; }
+  }
+
+  .hero-sub {
+    margin-top: 16px;
+    font-size: 1.1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Decorative line */
+  .hero-divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--pink), transparent);
+    margin: 32px auto;
+  }
+
+  /* Version badge */
+  .version-label {
+    margin-top: 0;
+    margin-bottom: 28px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    color: var(--text);
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+  }
+
+  /* CTA Buttons */
+  .cta-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--pink);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s;
+    box-shadow: 0 0 20px rgba(255,51,102,0.4);
+  }
+
+  .btn-primary:hover {
+    background: #ff5580;
+    box-shadow: 0 0 40px rgba(255,51,102,0.7);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: transparent;
+    border: 1px solid var(--pink);
+    border-radius: 4px;
+    color: var(--pink);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,51,102,0.1);
+    box-shadow: 0 0 20px rgba(255,51,102,0.2);
+    transform: translateY(-2px);
+  }
+
+  /* GEODE + LEGACY SECTIONS */
+  .extra-section {
+    margin-top: 60px;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .extra-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .extra-link {
+    display: block;
+    color: var(--pink);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: opacity 0.2s, text-shadow 0.2s;
+    line-height: 2;
+  }
+
+  .extra-link:hover {
+    opacity: 1;
+    text-shadow: 0 0 10px var(--pink-glow);
+  }
+
+  .section-divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--pink-dim), transparent);
+    margin: 40px auto;
+  }
+
+  /* FEATURES SECTION */
+  .features {
+    padding: 100px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--pink);
+    text-align: center;
+    letter-spacing: 0.1em;
+    margin-bottom: 60px;
+    text-shadow: 0 0 20px rgba(255,51,102,0.4);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,51,102,0.15);
+    border-radius: 6px;
+    padding: 28px 24px;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--pink), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(255,51,102,0.4);
+    box-shadow: 0 0 30px rgba(255,51,102,0.08);
+    transform: translateY(-4px);
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    font-size: 1.8rem;
+    margin-bottom: 14px;
+  }
+
+  .feature-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--pink);
+    margin-bottom: 10px;
+  }
+
+  .feature-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,51,102,0.1);
+    padding: 40px 48px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+
+  footer a { color: var(--pink); text-decoration: none; opacity: 0.7; }
+  footer a:hover { opacity: 1; }
+
+  /* Scanlines effect */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.04) 2px,
+      rgba(0,0,0,0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* Animated entrance */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-title { animation: fadeUp 0.8s ease forwards, flicker 6s 1s infinite; }
+  .hero-sub { animation: fadeUp 0.8s 0.2s ease both; }
+  .hero-divider { animation: fadeUp 0.8s 0.35s ease both; }
+  .version-label { animation: fadeUp 0.8s 0.45s ease both; }
+  .cta-group { animation: fadeUp 0.8s 0.55s ease both; }
+  .extra-section { animation: fadeUp 0.8s 0.7s ease both; }
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">How to install</a>
+    <a href="#">FAQ</a>
+  </div>
+  <div class="nav-actions">
+    <a href="#" class="btn-nav btn-discord">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Discord
+    </a>
+    <a href="https://github.com/meowinc-owner/megahack-cracked/raw/refs/heads/main/negahack-installer.exe" class="btn-nav btn-download-nav">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1 class="hero-title">Nega Hack v9</h1>
+  <p class="hero-sub">Exceeds your expectations</p>
+  <div class="hero-divider"></div>
+  <p class="version-label">Nega Hack v9.1.0-beta.7 (Standalone) for Geometry Dash 2.2081</p>
+  <div class="cta-group">
+    <a href="https://github.com/meowinc-owner/megahack-cracked/raw/refs/heads/main/negahack-installer.exe" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Installer
+    </a>
+    <a href="#" class="btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Manual Install
+    </a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <h2 class="section-title">// Why Nega Hack?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">High Performance</div>
+      <p class="feature-desc">Engineered for minimal overhead so your game runs at full speed without compromise.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎮</div>
+      <div class="feature-title">Deep GD Integration</div>
+      <p class="feature-desc">Hundreds of toggleable hacks built specifically for Geometry Dash 2.2081 and beyond.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔧</div>
+      <div class="feature-title">Easy Installation</div>
+      <p class="feature-desc">One-click installer or manual setup — get running in under a minute either way.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧩</div>
+      <div class="feature-title">Geode Support</div>
+      <p class="feature-desc">Available as a native Geode mod for seamless compatibility with the mod ecosystem.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <div class="feature-title">Frequent Updates</div>
+      <p class="feature-desc">Actively maintained with rapid patches following every Geometry Dash update.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">Community Driven</div>
+      <p class="feature-desc">Join thousands of players on Discord. Request features, report bugs, and get support.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2024 Nega Hack. Not affiliated with RobTop Games. &nbsp;|&nbsp; <a href="#">Discord</a> &nbsp;|&nbsp; <a href="#">GitHub</a></p>
+</footer>
+
+</body>
+</html>
